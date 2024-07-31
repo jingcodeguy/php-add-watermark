@@ -26,16 +26,23 @@
 /**
  * Usage example: XXX.php filename.jpg
  */
-if( isset($argv[1]) ) {
-  if( file_exists( $argv[1] )  ) {
-    print_r($argv);
+if (isset($argv[1])) {
+  if (file_exists($argv[1])) {
+      print_r($argv);
+      $filename = $argv[1];
+      try {
+          $image = sing_add_watermark($filename);
+          // Additional code to handle the watermarked image
+      } catch (Exception $e) {
+          echo "Error: " . $e->getMessage() . "\r\n";
+      }
+  } else {
+      echo "Error: The file does not exist.\r\n";
   }
 } else {
-  echo "usage example: XXX.php filename.jpg\r\n";
+  echo "Usage example: XXX.php filename.jpg\r\n";
   exit();
 }
-
-$filename = $argv[1];
 
 /**
  * This function applies a watermark pattern (such as a logo or copyright image) to a given image.
@@ -94,8 +101,6 @@ function sing_add_watermark($filename) {
 
   return $image;
 }
-
-$image = sing_add_watermark($filename);
 
 // Display the image in a web interface
 if (!isset($argv[1])) {
