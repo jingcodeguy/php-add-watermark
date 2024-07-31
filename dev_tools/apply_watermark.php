@@ -23,6 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $texture = new Imagick();
         $texture->setBackgroundColor(new ImagickPixel('none')); // Keyword: "transparent" also work
         $texture->readImage(realpath($watermark));
+
+        // ref: https://www.php.net/manual/en/imagick.constants.php#imagick.constants.channel-alpha
         $texture->evaluateImage(Imagick::EVALUATE_MULTIPLY, $opacity, Imagick::CHANNEL_ALPHA);
       
         // Create a larger canvas to accommodate the rotated watermark pattern
