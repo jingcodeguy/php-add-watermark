@@ -8,6 +8,7 @@
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     function sing_add_watermark($filename) {
+        $opacity = $_POST['opacity'];
 
         $original_filename = pathinfo($filename, PATHINFO_FILENAME);
         $watermark = 'logo-sample.png';
@@ -20,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $texture = new Imagick();
         $texture->setBackgroundColor(new ImagickPixel('none')); // Keyword: "transparent" also work
         $texture->readImage(realpath($watermark));
-        
+        $texture->evaluateImage(Imagick::EVALUATE_MULTIPLY, $opacity, Imagick::CHANNEL_ALPHA);
       
         // Create a larger canvas to accommodate the rotated watermark pattern
         $diagonal = ceil(sqrt(pow($image->getImageWidth(), 2) + pow($image->getImageHeight(), 2)));
