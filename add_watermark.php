@@ -27,13 +27,13 @@
  * Usage example: XXX.php filename.jpg
  */
 if( isset($argv[1]) ) {
-    if( file_exists( $argv[1] )  ) {
-      print_r($argv);
-    }
-  } else {
-    echo "usage example: XXX.php filename.jpg\r\n";
-    exit();
+  if( file_exists( $argv[1] )  ) {
+    print_r($argv);
   }
+} else {
+  echo "usage example: XXX.php filename.jpg\r\n";
+  exit();
+}
 
 $filename = $argv[1];
 
@@ -47,48 +47,52 @@ $filename = $argv[1];
  *
  */
 function sing_add_watermark($filename) {
-    $original_filename = pathinfo($filename, PATHINFO_FILENAME);
-    $watermark = 'logo-sample.png';
-    
-    // Load the original image
-    $image = new Imagick(realpath($filename));
-    $image->setImageFormat("png");
 
-    // Load the watermark image
-    $texture = new Imagick(realpath($watermark));
-    $texture->setImageAlpha(0.05); // Set transparency
+  $original_filename = pathinfo($filename, PATHINFO_FILENAME);
+  $watermark = 'logo-sample.png';
+  
+  // Load the original image
+  $image = new Imagick(realpath($filename));
+  $image->setImageFormat("png");
 
-    // Create a large canvas for the watermark pattern
-    $canvas_width = $image->getImageWidth() * 2.5;
-    $canvas_height = $image->getImageHeight() * 2.5;
-    $canvas = new Imagick();
-    $canvas->newImage($canvas_width, $canvas_height, new ImagickPixel('none'));
-    $canvas->setImageFormat("png");
+  // Load the watermark image
+  $texture = new Imagick(realpath($watermark));
+  $texture->setImageAlpha(0.05); // Set transparency
 
-    // Fill the canvas with the watermark texture
-    for ($x = 0; $x < $canvas_width; $x += $texture->getImageWidth()) {
-        for ($y = 0; $y < $canvas_height; $y += $texture->getImageHeight()) {
-            $canvas->compositeImage($texture, Imagick::COMPOSITE_OVER, $x, $y);
-        }
-    }
+  // Create a larger canvas to accommodate the rotated watermark pattern
+  $diagonal = ceil(sqrt(pow($image->getImageWidth(), 2) + pow($image->getImageHeight(), 2)));
+  $canvas = new Imagick();
+  $canvas->newImage($diagonal, $diagonal, new ImagickPixel('none'));
+  $canvas->setImageFormat("png");
 
-    // Rotate the entire canvas
-    $canvas->rotateImage(new ImagickPixel(), -45);
+  // Fill the canvas with the watermark texture
+  for ($x = 0; $x < $diagonal; $x += $texture->getImageWidth()) {
+      for ($y = 0; $y < $diagonal; $y += $texture->getImageHeight()) {
+          $canvas->compositeImage($texture, Imagick::COMPOSITE_OVER, $x, $y);
+      }
+  }
 
-    // Composite the watermark onto the original image
-    $offsetX = -($canvas_width - $image->getImageWidth()) / 2;
-    $offsetY = -($canvas_height - $image->getImageHeight()) / 2;
-    $image->compositeImage($canvas, Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
+  // Rotate the entire canvas
+  $canvas->rotateImage(new ImagickPixel('none'), -45); // Ensure background remains transparent
 
-    // Save the resulting image
-    $output_path = 'output-' . $original_filename . '.jpg';
-    $image->writeImage($output_path);
+  // Calculate offset to center the watermark pattern on the original image
+  $offsetX = ($image->getImageWidth() - $canvas->getImageWidth()) / 2;
+  $offsetY = ($image->getImageHeight() - $canvas->getImageHeight()) / 2;
 
-    // Clean up
-    $texture->destroy();
-    $canvas->destroy();
+  // Composite the watermark onto the original image
+  $image->compositeImage($canvas, Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
 
-    return $image;
+  // Save the resulting image
+  $output_path = 'output-' . $original_filename . '.jpg';
+  $image->writeImage($output_path);
+
+  // Clean up
+  $texture->destroy();
+  $canvas->destroy();
+  $image->clear();
+  $image->destroy();
+
+  return $image;
 }
 
 $image = sing_add_watermark($filename);
