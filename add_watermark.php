@@ -87,7 +87,7 @@ function sing_add_watermark($filename) {
   $offsetY = ($image->getImageHeight() - $canvas->getImageHeight()) / 2;
 
   // Composite the watermark onto the original image
-  $image->compositeImage($canvas, Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
+  $image->compositeImage($canvas, Imagick::COMPOSITE_OVER, intval($offsetX), intval($offsetY));
 
   // Save the resulting image
   $output_path = 'output-' . $original_filename . '.jpg';
