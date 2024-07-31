@@ -33,6 +33,9 @@
             <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="0.1">
         </div>
         <div>
+            <label for="positionX">Angle: </label>
+            <input type="number" id="angle" name="angle" value="0">
+            <!-- <input type="number" id="angle" name="angle" value="-45"> -->
             <label for="positionX">Position X: </label>
             <input type="number" id="positionX" name="positionX" value="100">
             <label for="positionY">Position Y: </label>
@@ -60,12 +63,14 @@
             const opacityInput = document.getElementById('opacity');
             const positionXInput = document.getElementById('positionX');
             const positionYInput = document.getElementById('positionY');
+            const angleInput = document.getElementById('angle');
             const previewImage = document.getElementById('preview-image');
         
             const applyWatermark = () => {
                 const opacity = opacityInput.value;
                 const positionX = positionXInput.value;
                 const positionY = positionYInput.value;
+                const angle = angleInput.value;
         
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', 'apply_watermark.php', true);
@@ -75,13 +80,14 @@
                         previewImage.src = 'data:image/png;base64,' + xhr.responseText;
                     }
                 };
-                xhr.send(`opacity=${opacity}&positionX=${positionX}&positionY=${positionY}`);
+                xhr.send(`opacity=${opacity}&positionX=${positionX}&positionY=${positionY}&angle=${angle}`);
             };
         
             // Attach event listeners to the inputs
             opacityInput.addEventListener('input', applyWatermark);
             positionXInput.addEventListener('input', applyWatermark);
             positionYInput.addEventListener('input', applyWatermark);
+            angleInput.addEventListener('input', applyWatermark);
             document.getElementById('apply-button').addEventListener('click', applyWatermark);
 
             // Initial application of watermark

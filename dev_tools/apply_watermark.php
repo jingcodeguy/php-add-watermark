@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     function sing_add_watermark($filename) {
         $opacity = $_POST['opacity'];
+        $angle = intval($_POST['angle']);
 
         $original_filename = pathinfo($filename, PATHINFO_FILENAME);
         $watermark = 'logo-sample.png';
@@ -37,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
       
         // Rotate the entire canvas
-        $canvas->rotateImage(new ImagickPixel('none'), -45); // Ensure background remains transparent
+        $canvas->rotateImage(new ImagickPixel('none'), $angle); // Ensure background remains transparent
       
         // Calculate offset to center the watermark pattern on the original image
         $offsetX = ($image->getImageWidth() - $canvas->getImageWidth()) / 2;
