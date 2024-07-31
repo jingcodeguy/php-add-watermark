@@ -6,44 +6,69 @@
 
 // apply_watermark.php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $opacity = intval($_POST['opacity']);
-    $positionX = intval($_POST['positionX']);
-    $positionY = intval($_POST['positionY']);
+    
+    function sing_add_watermark($filename) {
 
-    $originalImagePath = './jingcodeguy.jpg';
-    $watermarkImagePath = './logo-sample.png';
+        $original_filename = pathinfo($filename, PATHINFO_FILENAME);
+        $watermark = 'logo-sample.png';
+        
+        // Load the original image
+        $image = new Imagick(realpath($filename));
+        $image->setImageFormat("png");
+      
+        // Load the watermark image
+        $texture = new Imagick(realpath($watermark));
+        $texture->setBackgroundColor(new ImagickPixel('none')); // Keyword: "transparent" also work
+        $texture->setImageAlpha(0.1); // Set transparency
+        
+      
+        // Create a larger canvas to accommodate the rotated watermark pattern
+        $diagonal = ceil(sqrt(pow($image->getImageWidth(), 2) + pow($image->getImageHeight(), 2)));
+        $canvas = new Imagick();
+        $canvas->newImage($diagonal, $diagonal, new ImagickPixel('none'));
+        $canvas->setImageFormat("png");
+      
+        // Fill the canvas with the watermark texture
+        for ($x = 0; $x < $diagonal; $x += $texture->getImageWidth()) {
+            for ($y = 0; $y < $diagonal; $y += $texture->getImageHeight()) {
+                $canvas->compositeImage($texture, Imagick::COMPOSITE_OVER, $x, $y);
+            }
+        }
+      
+        // Rotate the entire canvas
+        $canvas->rotateImage(new ImagickPixel('none'), -45); // Ensure background remains transparent
+      
+        // Calculate offset to center the watermark pattern on the original image
+        $offsetX = ($image->getImageWidth() - $canvas->getImageWidth()) / 2;
+        $offsetY = ($image->getImageHeight() - $canvas->getImageHeight()) / 2;
+      
+        // Composite the watermark onto the original image
+        $image->compositeImage($canvas, Imagick::COMPOSITE_OVER, intval($offsetX), intval($offsetY));
+      
+        // Save the resulting image
+        // $output_path = 'output-' . $original_filename . '.jpg';
+        // $image->writeImage($output_path);
+      
+        // Clean up
+        // $texture->destroy();
+        // $canvas->destroy();
 
-    // Load images
-    $baseImage = imagecreatefromjpeg($originalImagePath);
-    $watermark = imagecreatefrompng($watermarkImagePath);
+        // If destroy here, the image will be emptied and nothing will return.
+        // $image->clear();
+        // $image->destroy();
+      
+        return $image;
+    }
 
-    // Set watermark opacity
-    imagealphablending($watermark, true);
-    imagesavealpha($watermark, true);
+    $filename = './jingcodeguy.jpg';
+    $imageData = sing_add_watermark($filename);
 
-    // Get dimensions
-    $baseWidth = imagesx($baseImage);
-    $baseHeight = imagesy($baseImage);
-    $watermarkWidth = imagesx($watermark);
-    $watermarkHeight = imagesy($watermark);
-
-    // Resize watermark if necessary
-    // $watermark = imagescale($watermark, new_width, new_height); // Uncomment if resizing is needed
-
-    // Apply watermark
-    imagecopy($baseImage, $watermark, $positionX, $positionY, 0, 0, $watermarkWidth, $watermarkHeight);
-
-    // Output image
-    ob_start();
-    imagepng($baseImage);
-    $imageData = ob_get_contents();
-    ob_end_clean();
-
-    // Cleanup
-    imagedestroy($baseImage);
-    imagedestroy($watermark);
-
+    // var_dump(($imageData));
+    // var_dump(base64_encode($imageData));
+    
     // Send the image data as base64
     echo base64_encode($imageData);
+    $imageData->clear();
+    $imageData->destroy();
 }
 ?>
