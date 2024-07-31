@@ -31,7 +31,7 @@ cd php-add-watermark
 
 Usage example in Command Line
 default settings: 
-- The logo, `logo-sample.png`, is applied with 0.5 (half) opacity, where the logo is in black color.
+- The logo, `logo-sample.png`, is applied with 0.05 (5%) opacity, where the logo is in black color.
 - The output image will be saved in the folder where the PHP script is run.
 
 ```
@@ -65,7 +65,7 @@ You may refer to the examples in the "Sample" folder for images.
 ## 安裝：
 使用以下命令在命令行中從這個存儲庫下載
 預設設定：
-- 將 `logo-sample.png` 的不透明度設為0.5（即一半），且Logo為黑色。
+- 將 `logo-sample.png` 的不透明度設為0.05（即5%），且Logo為黑色。
 - 輸出圖片將保存在執行PHP腳本的資料夾中。
 
 ```
