@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watermark Preview</title>
+    <style>
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #preview {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .image-container {
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 300px;
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Watermark Preview Tool</h1>
+        <div>
+            <label for="opacity">Opacity: </label>
+            <input type="range" id="opacity" name="opacity" min="0" max="255" value="128">
+        </div>
+        <div>
+            <label for="positionX">Position X: </label>
+            <input type="number" id="positionX" name="positionX" value="100">
+            <label for="positionY">Position Y: </label>
+            <input type="number" id="positionY" name="positionY" value="100">
+        </div>
+        <button id="apply-button">Apply Watermark</button>
+        <div id="preview">
+            <div class="image-container">
+                <h2>Original Image</h2>
+                <img id="original-image" src="./jingcodeguy.jpg" alt="Original">
+            </div>
+            <div class="image-container">
+                <h2>Watermark Image</h2>
+                <img id="watermark-image" src="./logo-sample.png" alt="Watermark">
+            </div>
+            <div class="image-container">
+                <h2>Preview</h2>
+                <img id="preview-image" src="" alt="Preview">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const opacityInput = document.getElementById('opacity');
+            const positionXInput = document.getElementById('positionX');
+            const positionYInput = document.getElementById('positionY');
+            const previewImage = document.getElementById('preview-image');
+        
+            const applyWatermark = () => {
+                const opacity = opacityInput.value;
+                const positionX = positionXInput.value;
+                const positionY = positionYInput.value;
+        
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'apply_watermark.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        previewImage.src = 'data:image/png;base64,' + xhr.responseText;
+                    }
+                };
+                xhr.send(`opacity=${opacity}&positionX=${positionX}&positionY=${positionY}`);
+            };
+        
+            // Attach event listeners to the inputs
+            opacityInput.addEventListener('input', applyWatermark);
+            positionXInput.addEventListener('input', applyWatermark);
+            positionYInput.addEventListener('input', applyWatermark);
+            document.getElementById('apply-button').addEventListener('click', applyWatermark);
+
+            // Initial application of watermark
+            applyWatermark();
+        });
+    </script>
+</body>
+</html>
