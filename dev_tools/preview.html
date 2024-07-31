@@ -23,6 +23,9 @@
             max-width: 300px;
             max-height: 300px;
         }
+        #opacity-value {
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -31,6 +34,7 @@
         <div>
             <label for="opacity">Opacity: </label>
             <input type="range" id="opacity" name="opacity" min="0" max="1" step="0.01" value="0.1">
+            <span id="opacity-value">0.1</span> 
         </div>
         <div>
             <label for="positionX">Angle: </label>
@@ -61,6 +65,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const opacityInput = document.getElementById('opacity');
+            const opacityValue = document.getElementById('opacity-value');
             const positionXInput = document.getElementById('positionX');
             const positionYInput = document.getElementById('positionY');
             const angleInput = document.getElementById('angle');
@@ -71,6 +76,9 @@
                 const positionX = positionXInput.value;
                 const positionY = positionYInput.value;
                 const angle = angleInput.value;
+
+                // Update the displayed opacity value
+                opacityValue.textContent = opacity;
         
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', 'apply_watermark.php', true);
