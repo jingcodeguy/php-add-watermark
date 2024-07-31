@@ -17,9 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $image->setImageFormat("png");
       
         // Load the watermark image
-        $texture = new Imagick(realpath($watermark));
+        $texture = new Imagick();
         $texture->setBackgroundColor(new ImagickPixel('none')); // Keyword: "transparent" also work
-        $texture->setImageAlpha(0.1); // Set transparency
+        $texture->readImage(realpath($watermark));
         
       
         // Create a larger canvas to accommodate the rotated watermark pattern
