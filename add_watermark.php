@@ -96,14 +96,16 @@ function sing_add_watermark($filename) {
   // Clean up
   $texture->destroy();
   $canvas->destroy();
+
+  // If destroy here, the image will be emptied and nothing will return.
   $image->clear();
   $image->destroy();
 
-  return $image;
+//   return $image;
 }
 
-// Display the image in a web interface
-if (!isset($argv[1])) {
-    header("Content-Type: image/png");
-    echo $image;
-}
+// Possible way to display the image in a web interface
+// if (!isset($argv[1])) {
+//     header("Content-Type: image/png");
+//     echo $image;
+// }
